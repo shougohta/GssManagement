@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/gss_management
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db
+    environment:
+      - BUNDLE_FORCE_RUBY_PLATFORM=true
+  db:
+    image: mysql:8.0
+    volumes:
+      - db-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+
+volumes:
+  db-data:
