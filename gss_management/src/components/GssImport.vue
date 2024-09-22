@@ -11,7 +11,7 @@
         v-model="spreadsheetUrl"
         placeholder="https://docs.google.com/spreadsheets/d/your-spreadsheet-id/"
       />
-      <button type="submit">取り込む</button>
+      <button type="submit" >取り込む</button>
     </form>
 
     <!-- エラーや結果の表示 -->
@@ -55,7 +55,7 @@ export default defineComponent({
     });
     return {
       spreadsheetUrl,
-      // submitUrl,
+      submitUrl,
       csvData,
       errorMessage
     };

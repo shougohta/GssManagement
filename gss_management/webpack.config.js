@@ -11,7 +11,17 @@ module.exports = {
         filename: 'bundle.js'
     },
     devServer: {
-        static: path.resolve(__dirname, 'public')  // Webpack 5ではstaticを使用
+        static: path.resolve(__dirname, 'public'), // 静的ファイルの提供
+        hot: true, // ホットリロードを有効にする
+        open: true, // ブラウザを自動で開く
+        port: 8080, // 使用するポート
+        historyApiFallback: true, // SPAの場合、404エラーを回避する
+        client: {
+            webSocketURL: {
+                pathname: '/ws', // WebSocketのパス
+                port: 8080, // ポートを指定
+            }
+        }
     },
     watchOptions: {
         poll: true
