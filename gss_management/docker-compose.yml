@@ -3,7 +3,7 @@ version: '3'
 services:
   web:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0' -e development"
     ports:
       - "3000:3000"
     volumes:
@@ -13,6 +13,7 @@ services:
     depends_on:
       - db
     environment:
+      - RAILS_ENV=development
       - BUNDLE_FORCE_RUBY_PLATFORM=true
   db:
     image: mysql:8.0

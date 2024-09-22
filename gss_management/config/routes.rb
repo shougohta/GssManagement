@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  root 'index#index'                   # ホームページへのルート
+  # Vue.jsのルーティングを処理するキャッチオール
+  get '*path', to: 'index#index'  # すべての未定義ルートをindex#indexに渡す
 end
