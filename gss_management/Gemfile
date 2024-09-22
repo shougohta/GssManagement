@@ -24,6 +24,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
+gem 'rack-proxy', '~> 0.7.7' 
 
 group :development, :test do
   gem 'pry'
@@ -42,3 +43,4 @@ gem "aws-sdk-s3", "~> 1.164"
 gem "ffi", "< 1.17.0"
 gem 'nokogiri', '~> 1.13'
 gem 'webpacker'
+

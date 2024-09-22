@@ -264,6 +264,7 @@ DEPENDENCIES
   pry-rails
   puma (~> 4.1)
   rack-cors
+  rack-proxy (~> 0.7.7)
   rails (~> 6.0.6, >= 6.0.6.1)
   spring
   spring-watcher-listen (~> 2.0.0)

@@ -1,6 +1,7 @@
 const { watch } = require('fs')
 const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
 
@@ -24,7 +25,8 @@ module.exports = {
             },
             {
                 test: /\.js$/,
-                loader: 'babel-loader'
+                loader: 'babel-loader',
+                exclude: /node_modules/,
             },
             {
                 test: /\.ts$/,
@@ -49,5 +51,11 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(),
-    ]
+    ],
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new CssMinimizerPlugin(),
+        ],
+    }
 }
