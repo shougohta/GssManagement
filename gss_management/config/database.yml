@@ -24,6 +24,7 @@ default: &default
 
 development:
   <<: *default
+  database: gss_management_development
 
 test:
   <<: *default
