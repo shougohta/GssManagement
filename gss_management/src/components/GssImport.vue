@@ -44,7 +44,7 @@ export default defineComponent({
     async function getGss () {
     try {
       console.log('getGss')
-      const res = await axios.get('http://localhost:3000/')
+      const res = await axios.get('http://localhost:3000/gss-import')
       console.log(res.data)
     }
     catch (err) {
