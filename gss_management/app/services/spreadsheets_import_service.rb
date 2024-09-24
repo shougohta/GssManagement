@@ -1,4 +1,7 @@
 class SpreadsheetsImportService
+  require 'google/apis/sheets_v4'
+  require 'googleauth'
+
   def initialize(spreadsheet_id, range)
     @spreadsheet_id = spreadsheet_id
     @range = range
@@ -28,6 +31,7 @@ class SpreadsheetsImportService
       Rails.logger.error("Error importing spreadsheet: #{e.message}")
       raise
     end
+    SampleUser.all
   end
 
   # 行の構造を定義

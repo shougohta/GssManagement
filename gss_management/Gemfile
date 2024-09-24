@@ -43,4 +43,5 @@ gem "aws-sdk-s3", "~> 1.164"
 gem "ffi", "< 1.17.0"
 gem 'nokogiri', '~> 1.13'
 gem 'webpacker'
+gem 'dotenv-rails', groups: [:development, :test]
 

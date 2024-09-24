@@ -13,12 +13,36 @@
       />
       <button type="submit" >取り込む</button>
     </form>
+    <p>取り込み用のシート: https://docs.google.com/spreadsheets/d/1_d9epDdc7xpRrMAPt5p_sJqKabP60lVf2OFml7vZ6NM/edit?gid=0#gid=0</p>
 
     <!-- エラーや結果の表示 -->
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     <div v-if="csvData">
       <h3>CSVデータ:</h3>
-      <pre>{{ csvData }}</pre>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">名前</th>
+            <th scope="col">性別</th>
+            <th scope="col">学年</th>
+            <th scope="col">出身地</th>
+            <th scope="col">専攻</th>
+            <th scope="col">課外活動</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in csvData" :key="item.id">
+            <th scope="row">{{ index + 1 }}</th>
+            <td>{{ item.student_name }}</td>
+            <td>{{ item.gender }}</td>
+            <td>{{ item.class_level }}</td>
+            <td>{{ item.home_state }}</td>
+            <td>{{ item.major }}</td>
+            <td>{{ item.extracurricular_activity }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -35,24 +59,25 @@ export default defineComponent({
 
     const submitUrl = async () => {
       try {
-        const response = await axios.post('/api/gss', { url: spreadsheetUrl.value });
-        csvData.value = response.data; // バックエンドからのCSVデータを保存
+        const response = await axios.post('http://localhost:3000/gss-import', { url: spreadsheetUrl.value, range: ["sample!A:F"]});
+        csvData.value = response.data.data; // バックエンドからのCSVデータを保存
+        console.log("data.data",response.data.data)
       } catch (error) {
         errorMessage.value = 'エラーが発生しました。URLを確認してください。';
       }
     };
-    async function getGss () {
-    try {
-      console.log('getGss')
-      const res = await axios.get('http://localhost:3000/gss-import')
-      console.log(res.data)
-    }
-    catch (err) {
-      console.log(err)
-    }};
-    onMounted(() => {
-      getGss()
-    });
+    // async function getGss () {
+    // try {
+    //   console.log('getGss')
+    //   const res = await axios.get('http://localhost:3000/gss-import')
+    //   console.log(res.data)
+    // }
+    // catch (err) {
+    //   console.log(err)
+    // }};
+    // onMounted(() => {
+    //   getGss()
+    // });
     return {
       spreadsheetUrl,
       submitUrl,
@@ -66,5 +91,32 @@ export default defineComponent({
 <style scoped>
 .error {
   color: red;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.custom-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.custom-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.custom-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.custom-table th {
+  padding: 12px;
 }
 </style>

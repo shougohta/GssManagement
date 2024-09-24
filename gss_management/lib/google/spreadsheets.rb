@@ -25,11 +25,6 @@ class Google::Spreadsheets
 
   # 指定されたスプレッドシートIDとレンジ（範囲）から値を取得
   def get_values(spreadsheet_id, range)
-    begin
-      @service.get_spreadsheet_values(spreadsheet_id, range)
-    rescue Google::Apis::Error => e
-      puts "エラーが発生しました: #{e.message}"
-      nil
-    end
+    @service.get_spreadsheet_values(spreadsheet_id, range)
   end
 end
