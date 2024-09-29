@@ -1,6 +1,6 @@
 class SpreadsheetsImportService
   require 'google/apis/sheets_v4'
-  require 'googleauth'
+  require 'googleauth' 
 
   def initialize(spreadsheet_id, range)
     @spreadsheet_id = spreadsheet_id
@@ -9,29 +9,35 @@ class SpreadsheetsImportService
 
   def execute
     begin
-      res = google_spreadsheet_service.get_values(spreadsheet_id, range)
+      res = Google::Spreadsheets.new.get_values(spreadsheet_id, range)
       return if res.values.empty?
-  
+
+      dynamic_table_service = DynamicTableService.new(gss_table_name)
+
+      dynamic_table_service.drop_table_if_exists
+      dynamic_table_service.create_table
+
       res.values.drop(1).each do |row_data|
         row = Row.new(*row_data)
-        attributes = row.to_h.slice(
-          :student_name,
-          :gender,
-          :class_level,
-          :home_state,
-          :major,
-          :extracurricular_activity
-        )
-  
-        user = SampleUser.find_or_initialize_by(attributes)
-        user.save!
+        attributes = row.to_h.slice(:student_name, :gender, :class_level, :home_state, :major, :extracurricular_activity)
+
+        # 動的テーブルにデータを挿入
+        ActiveRecord::Base.connection.execute("INSERT INTO #{dynamic_table_service.gss_table_name} (#{attributes.keys.join(', ')}) VALUES (#{attributes.values.map { |v| ActiveRecord::Base.connection.quote(v) }.join(', ')})")
       end
     rescue StandardError => e
-      # ログ記録やエラー処理を追加
       Rails.logger.error("Error importing spreadsheet: #{e.message}")
       raise
     end
-    SampleUser.all
+
+    # 動的モデルを作成
+    # ActiveRecordモデルインスタンスとして扱った方がJson形式への変換がシンプルになる
+    klass = Class.new(ActiveRecord::Base) do |c|
+      c.table_name = dynamic_table_service.gss_table_name
+    end
+    dynamic_model = Object.const_set(gss_model_name, klass)
+    
+    # 動的テーブルのデータを取得
+    data = dynamic_model.all.as_json
   end
 
   # 行の構造を定義
@@ -45,10 +51,22 @@ class SpreadsheetsImportService
   )
 
   private
-
   attr_reader :spreadsheet_id, :range
 
-    def google_spreadsheet_service
-      @google_spreadsheet_service ||= Google::Spreadsheets.new
-    end
+  def table_id
+    @table_id ||= spreadsheet_id[-5..-1].downcase
+  end
+
+  def gss_table_name
+    @gss_table_name ||= "users_#{table_id}"
+  end
+
+  # tableizeメソッドはモデルクラス名をテーブル名に変換してくれる。
+  # "AdminUser".tableize #=> admin_users
+  # 
+  # classifyメソッドはテーブル名をクラス名に変換してくれる。
+  # "people".classify #=> "Person"
+  def gss_model_name
+    @gss_model_name ||= gss_table_name.classify
+  end
 end
