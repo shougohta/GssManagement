@@ -12,6 +12,8 @@ class SpreadsheetsImportService
       res = Google::Spreadsheets.new.get_values(spreadsheet_id, range)
       return if res.values.empty?
 
+      # DynamicTableServiceのインスタンスを作成
+      # gss_table_nameを引数として渡し、動的テーブルの操作を行うためのサービスを初期化
       dynamic_table_service = DynamicTableService.new(gss_table_name)
 
       dynamic_table_service.drop_table_if_exists

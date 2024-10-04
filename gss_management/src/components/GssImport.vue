@@ -13,7 +13,6 @@
       />
       <button type="submit" >取り込む</button>
     </form>
-    <p>取り込み用のシート: https://docs.google.com/spreadsheets/d/1_d9epDdc7xpRrMAPt5p_sJqKabP60lVf2OFml7vZ6NM/edit?gid=0#gid=0</p>
 
     <!-- エラーや結果の表示 -->
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
