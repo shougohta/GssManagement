@@ -29,6 +29,7 @@ gem 'rack-proxy', '~> 0.7.7'
 group :development, :test do
   gem 'pry'
   gem 'pry-rails'  # RailsでPryを使用する場合
+  gem 'rspec-rails'
 end
 
 group :development do
@@ -39,7 +40,6 @@ group :development do
 end
 
 gem "google-api-client", "~> 0.53.0"
-gem "aws-sdk-s3", "~> 1.164"
 gem "ffi", "< 1.17.0"
 gem 'nokogiri', '~> 1.13'
 gem 'webpacker'
