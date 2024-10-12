@@ -20,42 +20,21 @@
     
     <div v-if="gssData.length > 0">
       <h3 class="data-title">CSVデータ:</h3>
-      <div class="table-wrapper">
-        <table class="custom-table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">名前</th>
-              <th scope="col">性別</th>
-              <th scope="col">学年</th>
-              <th scope="col">出身地</th>
-              <th scope="col">専攻</th>
-              <th scope="col">課外活動</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item) in gssData" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.student_name }}</td>
-              <td>{{ item.gender }}</td>
-              <td>{{ item.class_level }}</td>
-              <td>{{ item.home_state }}</td>
-              <td>{{ item.major }}</td>
-              <td>{{ item.extracurricular_activity }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <DataTable :data="gssData" /> <!-- テーブルコンポーネントを使用 -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
+import DataTable from '../components/DataTable.vue'; // テーブルコンポーネントをインポート
 import { gssData } from '../types/gss';
 
 export default defineComponent({
+  components: {
+    DataTable
+  },
   setup() {
     const spreadsheetUrl = ref('');
     const errorMessage = ref('');
@@ -65,7 +44,6 @@ export default defineComponent({
       try {
         const response = await axios.post('http://localhost:3000/gss-import', { url: spreadsheetUrl.value, range: ["sample!A:F"]});
         gssData.value = response.data.data; // バックエンドからのCSVデータを保存
-        console.log("data.data", response.data.data);
       } catch (error) {
         errorMessage.value = 'エラーが発生しました。URLを確認してください。';
       }
@@ -87,6 +65,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+/* 以前のスタイルをそのまま使用 */
 .container {
   max-width: 600px; /* 最大幅を設定 */
   margin: 0 auto; /* 中央揃え */
@@ -137,38 +116,5 @@ export default defineComponent({
 .data-title {
   font-size: 20px; /* データタイトルのフォントサイズ */
   margin-top: 20px; /* データタイトルの上部マージン */
-}
-
-.table-wrapper {
-  max-height: 400px; /* 適切な高さを設定 */
-  overflow-y: auto; /* 縦のスクロールを可能にする */
-}
-
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px; /* テーブルとタイトルの間のマージン */
-}
-
-.custom-table th,
-.custom-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.custom-table th {
-  background-color: #f2f2f2;
-  text-align: left;
-  position: sticky;
-  top: 0; /* ヘッダーの位置を固定 */
-  z-index: 1; /* スクロール時に他のコンテンツの後ろに隠れないようにする */
-}
-
-.custom-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.custom-table tr:hover {
-  background-color: #f1f1f1;
 }
 </style>

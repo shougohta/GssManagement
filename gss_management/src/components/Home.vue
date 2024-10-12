@@ -4,38 +4,63 @@
     <ul v-if="tableNames.length > 0" class="table-list">
       <li v-for="(item, index) in tableNames" :key="index" class="table-item">
         {{ index + 1 }}. {{ item }}
+        <button class="modal-button" @click="openModal(item)">詳細</button>
       </li>
     </ul>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+
+    <!-- モーダルコンポーネント -->
+    <Modal v-if="isModalOpen" :tableData="selectedTableData" :isOpen="isModalOpen" @close="closeModal" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
+import Modal from './Modal.vue';
+import { gssData } from '../types/gss';
 
 export default defineComponent({
+  components: {
+    Modal
+  },
   setup() {
     const message = 'テーブルの一覧:';
-    const tableNames = ref<string[]>([]); // ナンバリング用のリスト
-    const errorMessage = ref<string>(''); // エラーメッセージ
+    const tableNames = ref<string[]>([]);
+    const errorMessage = ref<string>('');
+    const isModalOpen = ref<boolean>(false);
+    const selectedTableData = ref<gssData>([]);
 
     const fetchTableNames = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/gss-import'); // バックエンドのURLに応じて変更
-        tableNames.value = response.data.data; // バックエンドから取得したテーブル名を設定
+        const response = await axios.get('http://localhost:3000/gss-import');
+        tableNames.value = response.data.data;
       } catch (error) {
         errorMessage.value = 'エラーが発生しました。テーブル名を取得できませんでした。';
       }
     };
 
-    // コンポーネントがマウントされたときにテーブル名を取得
+    const openModal = async (tableName: string) => {
+      const response = await axios.get(`http://localhost:3000/gss-import/${tableName}`);
+      selectedTableData.value = response.data.data;
+      isModalOpen.value = true;
+    };
+
+    const closeModal = () => {
+      isModalOpen.value = false;
+      selectedTableData.value = [];
+    };
+
     onMounted(fetchTableNames);
 
     return {
       message,
       tableNames,
-      errorMessage
+      errorMessage,
+      isModalOpen,
+      selectedTableData,
+      openModal,
+      closeModal
     };
   }
 });
@@ -43,34 +68,51 @@ export default defineComponent({
 
 <style scoped>
 .container {
-  max-width: 600px; /* 最大幅を設定 */
-  margin: 0 auto; /* 中央揃え */
-  padding: 20px; /* パディングを追加 */
-  font-family: Arial, sans-serif; /* フォントファミリーを指定 */
-  background-color: #f9f9f9; /* 背景色を設定 */
-  border-radius: 8px; /* 角を丸める */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* シャドウを追加 */
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 24px; /* タイトルのフォントサイズを設定 */
-  color: #333; /* タイトルの色 */
-  margin-bottom: 15px; /* タイトルとリストの間のマージン */
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
 }
 
 .table-list {
-  list-style-type: none; /* リストスタイルをなしに */
-  padding: 0; /* パディングをなしに */
+  list-style-type: none;
+  padding: 0;
 }
 
 .table-item {
-  padding: 10px; /* アイテムにパディングを追加 */
-  border-bottom: 1px solid #ddd; /* 下にボーダーを追加 */
-  transition: background-color 0.3s; /* ホバー効果のトランジション */
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex; /* フレックスボックスを使用 */
+  justify-content: space-between; /* 左右に分ける */
+  align-items: center; /* 垂直に中央揃え */
+  transition: background-color 0.3s;
 }
 
 .table-item:hover {
-  background-color: #f1f1f1; /* ホバー時の背景色 */
+  background-color: #f1f1f1;
+}
+
+.modal-button {
+  margin-left: 10px; /* ボタンとの間にマージン */
+  padding: 5px 10px; /* パディング */
+  background-color: #007BFF; /* ボタンの背景色 */
+  color: white; /* ボタンの文字色 */
+  border: none; /* ボタンのボーダーをなしに */
+  border-radius: 4px; /* 角を丸める */
+  cursor: pointer; /* カーソルをポインターに */
+}
+
+.modal-button:hover {
+  background-color: #0056b3; /* ホバー時の色 */
 }
 
 .error {

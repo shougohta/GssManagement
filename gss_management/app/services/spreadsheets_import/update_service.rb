@@ -32,10 +32,13 @@ module SpreadsheetsImport
         raise
       end
 
+      # メソッド内で定義しないと動的クラスでテーブル名に参照できない
+      table_name = gss_table_name
+
       # 動的モデルを作成
       # ActiveRecordモデルインスタンスとして扱った方がJson形式への変換がシンプルになる
       klass = Class.new(ActiveRecord::Base) do |c|
-        c.table_name = dynamic_table_service.gss_table_name
+        c.table_name = table_name
       end
       dynamic_model = Object.const_set(gss_model_name, klass)
       
