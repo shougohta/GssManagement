@@ -4,6 +4,14 @@
 
     <!-- GoogleスプレッドシートのURLを入力するフォーム -->
     <form @submit.prevent="submitUrl" class="url-form">  
+      <label for="gss-name">スプレッドシート名称を入力してください:</label>
+      <input
+        type="text"
+        id="gss-name"
+        v-model="spreadsheetName"
+        placeholder="スプレッドシート名称"
+        class="input-url"
+      />
       <label for="gss-url">Google SpreadsheetのURLを入力してください:</label>
       <input
         type="text"
@@ -37,12 +45,24 @@ export default defineComponent({
   },
   setup() {
     const spreadsheetUrl = ref('');
+    const spreadsheetName = ref(''); // スプレッドシート名称のための ref を追加
     const errorMessage = ref('');
     const gssData = ref<gssData>([]);
 
     const submitUrl = async () => {
+      // 名称とURLの両方が入力されているか確認
+      if (!spreadsheetUrl.value || !spreadsheetName.value) {
+        errorMessage.value = 'スプレッドシート名称とURLの両方を入力してください。';
+        return;
+      }
+
       try {
-        const response = await axios.post('http://localhost:3000/gss-import', { url: spreadsheetUrl.value, range: ["sample!A:F"]});
+        // テーブル名としてスプレッドシート名称をリクエストパラメータに追加
+        const response = await axios.post('http://localhost:3000/gss-import', { 
+          url: spreadsheetUrl.value, 
+          name: spreadsheetName.value, // テーブル名を追加
+          range: ["sample!A:F"]
+        });
         gssData.value = response.data.data; // バックエンドからのCSVデータを保存
       } catch (error) {
         errorMessage.value = 'エラーが発生しました。URLを確認してください。';
@@ -56,6 +76,7 @@ export default defineComponent({
 
     return {
       spreadsheetUrl,
+      spreadsheetName, // 新しく追加したrefを返す
       submitUrl,
       gssData,
       errorMessage

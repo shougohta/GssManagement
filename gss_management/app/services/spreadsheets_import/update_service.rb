@@ -3,18 +3,25 @@ module SpreadsheetsImport
     require 'google/apis/sheets_v4'
     require 'googleauth' 
 
-    def initialize(spreadsheet_id, range)
-      @spreadsheet_id = spreadsheet_id
-      @range = range
+    def initialize(form)
+      @form = form
+      @spreadsheets_service = Ggl::Spreadsheets.new # Ggl::Spreadsheetsのインスタンスを生成
     end
 
     def execute
       begin
-        res = Ggl::Spreadsheets.new.get_values(spreadsheet_id, range)
+        # スプレッドシートIDとgidを取得
+        spreadsheet_id = convert_url_to_spreadsheet_id(form[:url])
+        gid = extract_gid(form[:url])
+        
+        # gidを使ってタブ名を取得
+        sheet_title = @spreadsheets_service.get_sheet_title(spreadsheet_id, gid)
+
+        # Google Sheetsからデータを取得
+        res = @spreadsheets_service.get_values(spreadsheet_id, "#{sheet_title}!A:F")
         return if res.values.empty?
 
         # DynamicTableServiceのインスタンスを作成
-        # gss_table_nameを引数として渡し、動的テーブルの操作を行うためのサービスを初期化
         dynamic_table_service = SpreadsheetsImport::DynamicTableService.new(gss_table_name)
 
         dynamic_table_service.drop_table_if_exists
@@ -36,7 +43,6 @@ module SpreadsheetsImport
       table_name = gss_table_name
 
       # 動的モデルを作成
-      # ActiveRecordモデルインスタンスとして扱った方がJson形式への変換がシンプルになる
       klass = Class.new(ActiveRecord::Base) do |c|
         c.table_name = table_name
       end
@@ -57,23 +63,32 @@ module SpreadsheetsImport
     )
 
     private
-    attr_reader :spreadsheet_id, :range
+    attr_reader :form
 
-    def table_id
-      @table_id ||= spreadsheet_id[-5..-1].downcase
+    def convert_url_to_spreadsheet_id(url)
+      match_data = url.match(/(?<=\/d\/)([^\/]+)/)
+      raise ArgumentError, "Invalid URL format" unless match_data
+
+      match_data[0]
+    end
+
+    def extract_gid(url)
+      match_data = url.match(/gid=(\d+)/)
+      raise ArgumentError, "Invalid gid format" unless match_data
+
+      match_data[1]
     end
 
     def gss_table_name
-      @gss_table_name ||= "users_#{table_id}"
+      @gss_table_name ||= "table_#{spreadsheet_name}"
     end
 
-    # tableizeメソッドはモデルクラス名をテーブル名に変換してくれる。
-    # "AdminUser".tableize #=> admin_users
-    # 
-    # classifyメソッドはテーブル名をクラス名に変換してくれる。
-    # "people".classify #=> "Person"
     def gss_model_name
       @gss_model_name ||= gss_table_name.classify
+    end
+
+    def spreadsheet_name
+      @spreadsheet_name ||= form[:name]
     end
   end
 end

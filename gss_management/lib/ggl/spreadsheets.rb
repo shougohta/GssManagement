@@ -28,5 +28,14 @@ module Ggl
     def get_values(spreadsheet_id, range)
       @service.get_spreadsheet_values(spreadsheet_id, range)
     end
+
+    # スプレッドシートのメタデータを取得し、タブ名を返す
+    def get_sheet_title(spreadsheet_id, gid)
+      response = @service.get_spreadsheet(spreadsheet_id)
+      sheet = response.sheets.find { |s| s.properties.sheet_id.to_s == gid }
+      raise ArgumentError, "Sheet with gid #{gid} not found" unless sheet
+
+      sheet.properties.title
+    end
   end
 end
