@@ -83,7 +83,7 @@ export default defineComponent({
 <style scoped>
 .container {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 50px auto;
   padding: 20px;
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;

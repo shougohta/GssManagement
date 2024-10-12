@@ -89,7 +89,7 @@ export default defineComponent({
 /* 以前のスタイルをそのまま使用 */
 .container {
   max-width: 600px; /* 最大幅を設定 */
-  margin: 0 auto; /* 中央揃え */
+  margin: 50px auto; /* 中央揃え */
   padding: 20px; /* パディングを追加 */
   font-family: Arial, sans-serif; /* フォントファミリーを指定 */
   background-color: #f9f9f9; /* 背景色を設定 */
