@@ -4,7 +4,10 @@
     <ul v-if="tableNames.length > 0" class="table-list">
       <li v-for="(item, index) in tableNames" :key="index" class="table-item">
         {{ index + 1 }}. {{ item }}
-        <button class="modal-button" @click="openModal(item)">詳細</button>
+        <div class="button-container">
+          <button class="modal-button" @click="openModal(item)">詳細</button>
+          <button class="delete-button" @click="deleteTable(item)">削除</button>
+        </div>
       </li>
     </ul>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
@@ -51,6 +54,16 @@ export default defineComponent({
       selectedTableData.value = [];
     };
 
+    const deleteTable = async (tableName: string) => {
+      try {
+        await axios.delete(`http://localhost:3000/gss-import/${tableName}`);
+        // 削除成功後、tableNamesから削除されたテーブル名を取り除く
+        tableNames.value = tableNames.value.filter(item => item !== tableName);
+      } catch (error) {
+        errorMessage.value = '削除中にエラーが発生しました。';
+      }
+    };
+
     onMounted(fetchTableNames);
 
     return {
@@ -60,7 +73,8 @@ export default defineComponent({
       isModalOpen,
       selectedTableData,
       openModal,
-      closeModal
+      closeModal,
+      deleteTable
     };
   }
 });
@@ -92,13 +106,18 @@ export default defineComponent({
   padding: 10px;
   border-bottom: 1px solid #ddd;
   display: flex; /* フレックスボックスを使用 */
-  justify-content: space-between; /* 左右に分ける */
   align-items: center; /* 垂直に中央揃え */
   transition: background-color 0.3s;
 }
 
 .table-item:hover {
   background-color: #f1f1f1;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* ボタンを右寄せ */
+  flex-grow: 1; /* リストアイテム全体が可能な限りのスペースを取る */
 }
 
 .modal-button {
@@ -111,8 +130,22 @@ export default defineComponent({
   cursor: pointer; /* カーソルをポインターに */
 }
 
+.delete-button {
+  margin-left: 10px; /* ボタンとの間にマージン */
+  padding: 5px 10px; /* パディング */
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .modal-button:hover {
   background-color: #0056b3; /* ホバー時の色 */
+}
+
+.delete-button:hover {
+  background-color: #c82333; /* ホバー時の色 */
 }
 
 .error {

@@ -10,7 +10,7 @@ module SpreadsheetsImport
 
     def execute
       begin
-        res = Google::Spreadsheets.new.get_values(spreadsheet_id, range)
+        res = Ggl::Spreadsheets.new.get_values(spreadsheet_id, range)
         return if res.values.empty?
 
         # DynamicTableServiceのインスタンスを作成

@@ -1,6 +1,6 @@
 require "google/apis/sheets_v4"
 
-module Google
+module Ggl
   class Spreadsheets
     def initialize
       @service = Google::Apis::SheetsV4::SheetsService.new

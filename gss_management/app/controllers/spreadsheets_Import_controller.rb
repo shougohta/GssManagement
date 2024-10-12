@@ -27,4 +27,13 @@ class SpreadsheetsImportController < ApplicationController
   rescue StandardError => e
     render json: { status: 'error', message: e.message }, status: :internal_server_error
   end
+
+  # Spreadsheetsの削除処理
+  def destroy
+    result = ::SpreadsheetsImport::DestroyUsecase.new(params).call
+
+    render json: { status: result[:status] }, status: :ok
+  rescue StandardError => e
+    render json: { status: 'error', message: e.message }, status: :internal_server_error
+  end
 end
