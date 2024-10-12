@@ -4,7 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
-
+    mode: 'development',
     entry: './src/main.ts',
     output: {
         path: path.resolve(__dirname, 'public', 'js'),
