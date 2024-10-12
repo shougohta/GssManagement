@@ -108,7 +108,7 @@ export default defineComponent({
 }
 
 .input-url {
-  width: 100%; /* 入力フィールドの幅を100%に */
+  width: 97%; /* 入力フィールドの幅を100%に */
   padding: 10px; /* パディングを追加 */
   border: 1px solid #ccc; /* ボーダーを設定 */
   border-radius: 4px; /* 角を丸める */

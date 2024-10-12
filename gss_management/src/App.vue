@@ -52,7 +52,7 @@ export default {
 }
 
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.4); /* アクティブリンクの背景色 */
+  background-color: rgba(255, 255, 255, 0.2); /* アクティブリンクの背景色 */
   font-weight: bold; /* アクティブリンクの文字を太字にする */
 }
 
