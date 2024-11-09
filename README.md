@@ -12,11 +12,9 @@ GSS一括管理くん
 2. GSSを表示できる
     1. Vue
     2. テーブル形式をそのまま表示
-3. GSSのデータを変換できる
-    1. 四則演算ができる
-4. GSSのデータの表示方法を変換できる
-    1. グラフ表示できる
-    2. etc.
+3. バッチサーバーでdaemonのタスクとしてGSSの更新を実行
+    1. タスクテーブルを作る
+    2. GSSの更新をdaemonとして定義する
 
 ⚫︎その他使いたいもの
 
@@ -281,3 +279,131 @@ rails generate rspec:install
 # テストの実行
 bundle exec rspec
 ```
+## 7. タスクテーブル/モデル定義
+
+### 1. タスク定義
+```ruby
+rails generate migration CreateGssSyncTasks name:string status:integer scheduled_at:datetime completed_at:datetime gss_url:string tab_name:string
+```
+
+```ruby
+class CreateGssSyncTasks < ActiveRecord::Migration[6.0]
+  def change
+    create_table :gss_sync_tasks do |t|
+      t.string :name, null: false
+      t.integer :status, default: 0, null: false
+      t.datetime :scheduled_at
+      t.datetime :completed_at
+      t.string :gss_url, null: false
+      t.string :tab_name, null: false
+
+      t.timestamps
+    end
+  end
+end
+```
+
+```ruby
+rails db:migrate
+```
+
+### 2. モデル定義
+```ruby
+class GssSyncTask < ApplicationRecord
+  enum status: { pending: 0, in_progress: 1, completed: 2, failed: 3 }
+
+  validates :name, presence: true
+  validates :status, inclusion: { in: statuses.keys }
+  validates :gss_url, presence: true
+  validates :tab_name, presence: true
+end
+```
+
+### 3. 同期サービス生成
+
+```ruby
+class GssSyncTasksController < ApplicationController
+  def create
+    task = GssSyncTask.create!(
+      name: "スプレッドシート同期",
+      status: :pending,
+      gss_url: "https://docs.google.com/spreadsheets/d/xxxxxxx", # 実際の URL を設定
+      tab_name: "Sheet1" # 実際のタブ名を設定
+    )
+    
+    # ジョブや同期処理を非同期に実行
+    SpreadsheetSyncJob.perform_async(task.id)
+    
+    redirect_to tasks_path, notice: 'タスクが作成されました。'
+  end
+end
+```
+
+```ruby
+class SpreadsheetSyncService
+  def self.sync_spreadsheet(task)
+    # スプレッドシート URL とタブ名を使用して同期処理を実行
+    gss_url = task.gss_url
+    tab_name = task.tab_name
+
+    # Google Sheets API などを使って同期処理を実行
+    result = ::SpreadsheetsImport::UpdateService.new(gss_url, tab_name).execute
+
+    if result.success?
+      task.update!(status: 'completed', completed_at: Time.current)
+    else
+      task.update!(status: 'failed')
+    end
+  end
+end
+```
+
+## 8. デーモンの定義
+
+### 1. sidekickサーバーの定義
+
+docker-compose.yml 
+```ruby　
+・・・
+ sidekiq:
+    build:
+    command: bundle exec sidekiq
+    volumes:
+      - ".:/app"
+    depends_on:
+      - db
+    environment:
+      - RAILS_ENV=development
+    networks:
+      - app_network
+・・・
+```
+
+config/sidekiq.yml
+```ruby
+:concurrency: 5
+:queues:
+  - default
+  - mailers
+```
+
+### 2. job定義
+
+```ruby
+class GssSyncJob
+  include Sidekiq::Worker
+
+  def perform(task_id)
+    task = GssSyncTask.find(task_id)
+    # GSSの更新処理を呼び出す
+    SpreadsheetSyncService.sync_spreadsheet(task)
+  end
+end
+```
+
+
+
+
+
+
+
