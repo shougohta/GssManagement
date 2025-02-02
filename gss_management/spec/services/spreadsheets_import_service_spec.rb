@@ -1,3 +1,4 @@
+# 2025/02/02 github actionsでtestしたい
 require 'rails_helper'
 
 RSpec.describe SpreadsheetsImportService do
