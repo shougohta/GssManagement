@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SpreadsheetsImport
   class DynamicTableService
     def initialize(gss_table_name)

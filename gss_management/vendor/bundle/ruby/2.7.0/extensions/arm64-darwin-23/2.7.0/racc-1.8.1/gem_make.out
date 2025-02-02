@@ -1,0 +1,15 @@
+current directory: /Users/ootashougo/Documents/GssManagement/gss_management/vendor/bundle/ruby/2.7.0/gems/racc-1.8.1/ext/racc/cparse
+/Users/ootashougo/.rbenv/versions/2.7.3/bin/ruby -I /Users/ootashougo/.rbenv/versions/2.7.3/lib/ruby/2.7.0 -r ./siteconf20250202-90489-1pwym18.rb extconf.rb
+creating Makefile
+
+current directory: /Users/ootashougo/Documents/GssManagement/gss_management/vendor/bundle/ruby/2.7.0/gems/racc-1.8.1/ext/racc/cparse
+make "DESTDIR=" clean
+
+current directory: /Users/ootashougo/Documents/GssManagement/gss_management/vendor/bundle/ruby/2.7.0/gems/racc-1.8.1/ext/racc/cparse
+make "DESTDIR="
+compiling cparse.c
+linking shared-object racc/cparse.bundle
+
+current directory: /Users/ootashougo/Documents/GssManagement/gss_management/vendor/bundle/ruby/2.7.0/gems/racc-1.8.1/ext/racc/cparse
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 cparse.bundle ./.gem.20250202-90489-1s69gm1/racc

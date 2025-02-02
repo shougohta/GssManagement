@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   root 'index#index'
   get 'gss-import', to: 'spreadsheets_import#index'

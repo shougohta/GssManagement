@@ -1,13 +1,13 @@
+# frozen_string_literal: true
+
 class SpreadsheetsImportController < ApplicationController
   # テーブル名の一覧を取得
   def index
-    begin
-      result = ::SpreadsheetsImport::IndexUsecase.new.call
+    result = ::SpreadsheetsImport::IndexUsecase.new.call
 
-      render json: { status: result[:status], data: result[:table_names] }, status: :ok
-    rescue StandardError => e
-      render json: { status: 'error', message: e.message }, status: :internal_server_error
-    end
+    render json: { status: result[:status], data: result[:table_names] }, status: :ok
+  rescue StandardError => e
+    render json: { status: 'error', message: e.message }, status: :internal_server_error
   end
 
   # テーブル詳細を返す

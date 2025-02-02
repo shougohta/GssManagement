@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SpreadsheetsImport
   class UpdateUsecase
     def initialize(form)
@@ -6,7 +8,7 @@ module SpreadsheetsImport
 
     def call
       sample_users = ::SpreadsheetsImport::UpdateService.new(form).execute
-      {status: :ok, item: sample_users}
+      { status: :ok, item: sample_users }
     end
 
     private
