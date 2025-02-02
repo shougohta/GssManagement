@@ -18,7 +18,7 @@ jobs:
       - name: Bundler and gem install
         run: |
           cd gss_management
-          gem install bundler
+          gem install bundler -v 2.1.4
           bundle install --jobs 4 --retry 3
 
   rspec:
