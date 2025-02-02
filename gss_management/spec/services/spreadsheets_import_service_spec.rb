@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# 2025/02/02 github actionsでtestしたい
 require 'rails_helper'
 
 RSpec.describe SpreadsheetsImportService do
@@ -18,7 +21,8 @@ RSpec.describe SpreadsheetsImportService do
     before do
       allow(Google::Spreadsheets).to receive(:new).and_return(mock_spreadsheet)
       allow(mock_spreadsheet).to receive(:get_values).and_return(mock_response)
-      allow(DynamicTableService).to receive(:new).and_return(double('dynamic_table_service', drop_table_if_exists: nil, create_table: nil, gss_table_name: 'users_test'))
+      allow(DynamicTableService).to receive(:new).and_return(double('dynamic_table_service', drop_table_if_exists: nil,
+                                                                                             create_table: nil, gss_table_name: 'users_test'))
     end
 
     it 'imports data from Google Spreadsheet' do
@@ -34,7 +38,8 @@ RSpec.describe SpreadsheetsImportService do
     it 'returns data as json' do
       result = service.execute
       expect(result).to be_an(Array)
-      expect(result.first).to include('student_name', 'gender', 'class_level', 'home_state', 'major', 'extracurricular_activity')
+      expect(result.first).to include('student_name', 'gender', 'class_level', 'home_state', 'major',
+                                      'extracurricular_activity')
     end
 
     context 'when spreadsheet is empty' do

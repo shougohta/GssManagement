@@ -1,4 +1,6 @@
-require "google/apis/sheets_v4"
+# frozen_string_literal: true
+
+require 'google/apis/sheets_v4'
 
 module Ggl
   class Spreadsheets
@@ -10,15 +12,15 @@ module Ggl
     # 認証
     def authorize
       json_key = JSON.generate(
-        private_key: ENV['GOOGLE_PRIVATE_KEY'].gsub("\\n", "\n"),
-        client_email: ENV['GOOGLE_CLIENT_EMAIL'].gsub("\\n", "\n")
+        private_key: ENV['GOOGLE_PRIVATE_KEY'].gsub('\\n', "\n"),
+        client_email: ENV['GOOGLE_CLIENT_EMAIL'].gsub('\\n', "\n")
       )
 
       json_key_io = StringIO.new(json_key)
 
       authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
         json_key_io: json_key_io,
-        scope: ["https://www.googleapis.com/auth/spreadsheets"]
+        scope: ['https://www.googleapis.com/auth/spreadsheets']
       )
       authorizer.fetch_access_token!
       authorizer

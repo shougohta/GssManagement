@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class IndexController < ApplicationController
   def index
     # ホームページ用の処理

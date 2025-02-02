@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SpreadsheetsImport
   class DestroyUsecase
     def initialize(form)
@@ -6,7 +8,7 @@ module SpreadsheetsImport
 
     def call
       drop_table(form[:table_name])
-      {status: :ok}
+      { status: :ok }
     end
 
     private

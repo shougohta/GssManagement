@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module SpreadsheetsImport
   class UpdateService
     require 'google/apis/sheets_v4'
-    require 'googleauth' 
+    require 'googleauth'
 
     def initialize(form)
       @form = form
@@ -13,7 +15,7 @@ module SpreadsheetsImport
         # スプレッドシートIDとgidを取得
         spreadsheet_id = convert_url_to_spreadsheet_id(form[:url])
         gid = extract_gid(form[:url])
-        
+
         # gidを使ってタブ名を取得
         sheet_title = @spreadsheets_service.get_sheet_title(spreadsheet_id, gid)
 
@@ -29,10 +31,13 @@ module SpreadsheetsImport
 
         res.values.drop(1).each do |row_data|
           row = Row.new(*row_data)
-          attributes = row.to_h.slice(:student_name, :gender, :class_level, :home_state, :major, :extracurricular_activity)
+          attributes = row.to_h.slice(:student_name, :gender, :class_level, :home_state, :major,
+                                      :extracurricular_activity)
 
           # 動的テーブルにデータを挿入
-          ActiveRecord::Base.connection.execute("INSERT INTO #{dynamic_table_service.gss_table_name} (#{attributes.keys.join(', ')}) VALUES (#{attributes.values.map { |v| ActiveRecord::Base.connection.quote(v) }.join(', ')})")
+          ActiveRecord::Base.connection.execute("INSERT INTO #{dynamic_table_service.gss_table_name} (#{attributes.keys.join(', ')}) VALUES (#{attributes.values.map do |v|
+                                                                                                                                                 ActiveRecord::Base.connection.quote(v)
+                                                                                                                                               end.join(', ')})")
         end
       rescue StandardError => e
         Rails.logger.error("Error importing spreadsheet: #{e.message}")
@@ -47,9 +52,9 @@ module SpreadsheetsImport
         c.table_name = table_name
       end
       dynamic_model = Object.const_set(gss_model_name, klass)
-      
+
       # 動的テーブルのデータを取得
-      data = dynamic_model.all.as_json
+      dynamic_model.all.as_json
     end
 
     # 行の構造を定義
@@ -63,18 +68,19 @@ module SpreadsheetsImport
     )
 
     private
+
     attr_reader :form
 
     def convert_url_to_spreadsheet_id(url)
-      match_data = url.match(/(?<=\/d\/)([^\/]+)/)
-      raise ArgumentError, "Invalid URL format" unless match_data
+      match_data = url.match(%r{(?<=/d/)([^/]+)})
+      raise ArgumentError, 'Invalid URL format' unless match_data
 
       match_data[0]
     end
 
     def extract_gid(url)
       match_data = url.match(/gid=(\d+)/)
-      raise ArgumentError, "Invalid gid format" unless match_data
+      raise ArgumentError, 'Invalid gid format' unless match_data
 
       match_data[1]
     end
