@@ -32,6 +32,8 @@ group :development, :test do
   gem 'pry'
   gem 'pry-rails' # RailsでPryを使用する場合
   gem 'rspec-rails'
+  gem 'rubocop', '~> 1.55.0'
+  gem 'rubocop-rails', '~> 2.19.0'
 end
 
 group :development do
